@@ -14,7 +14,7 @@ Node.js, Express, Dotenv, Nodemon, MySQL e Sequelize. Nas próximas etapas entra
 4. Copie o arquivo `.env.example` para `.env` e preencha com os dados do seu MySQL local.
 5. Crie o banco de dados no MySQL: `CREATE DATABASE digitalcollegebr;`
 6. Rode `npx sequelize-cli db:migrate` para criar as tabelas.
-7. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
+8. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
 
 A API sobe em http://localhost:3000.
 
@@ -40,7 +40,7 @@ tests/          testes automatizados (Jest)
 - [x] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
 - [x] Etapa 3 - CRUD de usuários
 - [x] Etapa 4 - CRUD de categorias
-- [ ] Etapa 5 - CRUD de produtos
+- [x] Etapa 5 - CRUD de produtos
 - [ ] Etapa 6 - Login com JWT
 - [ ] Etapa 7 - Documentação (Swagger) e testes
 
@@ -56,6 +56,18 @@ O banco se chama `digitalcollegebr` e tem 6 tabelas:
 - `product_categories` - ligação entre produtos e categorias (um produto pode estar em várias categorias)
 
 As tabelas são criadas pelas migrations (`npx sequelize-cli db:migrate`). Para desfazer a última: `npx sequelize-cli db:migrate:undo`.
+
+## Endpoints de produtos
+
+| Método | Endereço | O que faz | Respostas |
+|--------|----------|-----------|-----------|
+| GET | `/v1/product/search` | Lista produtos com paginação e filtros | 200, 400 |
+| GET | `/v1/product/:id` | Busca um produto pelo ID | 200, 404 |
+| POST | `/v1/product` | Cadastra produto com imagens, opções e categorias | 201, 400 |
+| PUT | `/v1/product/:id` | Atualiza o produto (dá para trocar/apagar imagens e opções) | 204, 400, 404 |
+| DELETE | `/v1/product/:id` | Remove o produto (e apaga os arquivos de imagem) | 204, 404 |
+
+Filtros da busca: `match` (procura no nome e na descrição), `category_ids=1,2`, `price-range=100-200` e `option[ID]=valor1,valor2` (ex.: `option[45]=GG,PP`). As imagens são enviadas em base64 no cadastro e ficam acessíveis em `/uploads/nome-do-arquivo.png`.
 
 ## Endpoints de categorias
 
