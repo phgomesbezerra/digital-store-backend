@@ -1,0 +1,9 @@
+// .sequelizerc - diz ao sequelize-cli onde ficam config, models e migrations,
+// porque o projeto guarda esses arquivos dentro de src/ (estrutura do enunciado).
+const path = require('path');
+
+module.exports = {
+  config: path.resolve('src', 'config', 'database.js'),
+  'models-path': path.resolve('src', 'models'),
+  'migrations-path': path.resolve('src', 'migrations'),
+};

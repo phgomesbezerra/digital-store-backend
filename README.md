@@ -4,15 +4,17 @@ API da loja Digital Store, projeto backend do curso Full Stack (Digital College)
 
 ## Tecnologias
 
-Node.js, Express, Dotenv, Nodemon. Nas próximas etapas entram MySQL, Sequelize, JWT, bcrypt e Jest.
+Node.js, Express, Dotenv, Nodemon, MySQL e Sequelize. Nas próximas etapas entram JWT, bcrypt e Jest.
 
 ## Como rodar
 
 1. Instale o Node.js (versão 18 ou superior).
 2. Clone este repositório e entre na pasta.
 3. Rode `npm install` para baixar as dependências.
-4. Copie o arquivo `.env.example` para `.env` e ajuste se precisar.
-5. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
+4. Copie o arquivo `.env.example` para `.env` e preencha com os dados do seu MySQL local.
+5. Crie o banco de dados no MySQL: `CREATE DATABASE digitalcollegebr;`
+6. Rode `npx sequelize-cli db:migrate` para criar as tabelas.
+7. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
 
 A API sobe em http://localhost:3000.
 
@@ -20,9 +22,10 @@ A API sobe em http://localhost:3000.
 
 ```
 src/
-  config/       configurações (banco de dados, etc.)
+  config/       configurações (conexão com o banco)
   controllers/  recebem as requisições e devolvem as respostas
   middleware/   verificações antes da rota (ex.: token JWT)
+  migrations/   scripts que criam as tabelas no banco
   models/       tabelas do banco (Sequelize)
   routes/       endereços da API
   services/     regras de negócio
@@ -34,9 +37,22 @@ tests/          testes automatizados (Jest)
 ## Etapas do projeto
 
 - [x] Etapa 1 - Estrutura, Express e configuração inicial
-- [ ] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
+- [x] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
 - [ ] Etapa 3 - CRUD de usuários
 - [ ] Etapa 4 - CRUD de categorias
 - [ ] Etapa 5 - CRUD de produtos
 - [ ] Etapa 6 - Login com JWT
 - [ ] Etapa 7 - Documentação (Swagger) e testes
+
+## Banco de dados
+
+O banco se chama `digitalcollegebr` e tem 6 tabelas:
+
+- `users` - usuários do sistema (a senha é guardada como hash, nunca em texto puro)
+- `categories` - categorias de produtos (ex.: Tênis, Camisetas)
+- `products` - produtos da loja
+- `product_images` - imagens de cada produto
+- `product_options` - opções de cada produto (ex.: tamanhos 39,40,41 ou cores)
+- `product_categories` - ligação entre produtos e categorias (um produto pode estar em várias categorias)
+
+As tabelas são criadas pelas migrations (`npx sequelize-cli db:migrate`). Para desfazer a última: `npx sequelize-cli db:migrate:undo`.
