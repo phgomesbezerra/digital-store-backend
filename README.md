@@ -66,4 +66,6 @@ As tabelas são criadas pelas migrations (`npx sequelize-cli db:migrate`). Para 
 | PUT | `/v1/user/:id` | Atualiza nome e e-mail | 204, 400, 404 |
 | DELETE | `/v1/user/:id` | Remove o usuário | 204, 404 |
 
-A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A resposta da API nunca devolve a senha. A proteção por token (JWT) entra na Etapa 6.
+A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A resposta da API nunca devolve a senha.
+
+**Atenção:** os endpoints de escrita (POST, PUT, DELETE) ainda **não** estão protegidos por token. A proteção com JWT entra na Etapa 6. Até lá, esta versão é só para desenvolvimento local, não para uso público com dados reais.

@@ -4,41 +4,65 @@ const userService = require('../services/userService');
 
 // GET /v1/user/:id - dados do usuario pelo ID.
 async function obterPorId(req, res) {
-  const user = await userService.buscarPorId(req.params.id);
-  if (!user) {
-    return res.status(404).json({ message: 'Usuário não encontrado.' });
+  try {
+    const user = await userService.buscarPorId(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    return res.status(200).json(user);
+  } catch (erro) {
+    // Se algo inesperado acontecer (ex.: banco fora do ar),
+    // a API responde 500 em vez de quebrar.
+    return res.status(500).json({ message: 'Erro interno no servidor.' });
   }
-  return res.status(200).json(user);
 }
 
 // POST /v1/user - cadastro de usuario.
 async function cadastrar(req, res) {
-  const resultado = await userService.criar(req.body);
-  if (resultado.erro) {
-    return res.status(400).json({ message: resultado.erro });
+  try {
+    const resultado = await userService.criar(req.body);
+    if (resultado.erro) {
+      return res.status(400).json({ message: resultado.erro });
+    }
+    return res.status(201).json(resultado.user);
+  } catch (erro) {
+    // Se algo inesperado acontecer (ex.: banco fora do ar),
+    // a API responde 500 em vez de quebrar.
+    return res.status(500).json({ message: 'Erro interno no servidor.' });
   }
-  return res.status(201).json(resultado.user);
 }
 
 // PUT /v1/user/:id - atualiza dados do usuario.
 async function atualizar(req, res) {
-  const resultado = await userService.atualizar(req.params.id, req.body);
-  if (resultado.erro) {
-    return res.status(400).json({ message: resultado.erro });
+  try {
+    const resultado = await userService.atualizar(req.params.id, req.body);
+    if (resultado.erro) {
+      return res.status(400).json({ message: resultado.erro });
+    }
+    if (resultado.naoEncontrado) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    return res.status(204).send(); // 204 = sucesso sem corpo de resposta
+  } catch (erro) {
+    // Se algo inesperado acontecer (ex.: banco fora do ar),
+    // a API responde 500 em vez de quebrar.
+    return res.status(500).json({ message: 'Erro interno no servidor.' });
   }
-  if (resultado.naoEncontrado) {
-    return res.status(404).json({ message: 'Usuário não encontrado.' });
-  }
-  return res.status(204).send(); // 204 = sucesso sem corpo de resposta
 }
 
 // DELETE /v1/user/:id - remove o usuario.
 async function deletar(req, res) {
-  const resultado = await userService.deletar(req.params.id);
-  if (resultado.naoEncontrado) {
-    return res.status(404).json({ message: 'Usuário não encontrado.' });
+  try {
+    const resultado = await userService.deletar(req.params.id);
+    if (resultado.naoEncontrado) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    return res.status(204).send();
+  } catch (erro) {
+    // Se algo inesperado acontecer (ex.: banco fora do ar),
+    // a API responde 500 em vez de quebrar.
+    return res.status(500).json({ message: 'Erro interno no servidor.' });
   }
-  return res.status(204).send();
 }
 
 module.exports = { obterPorId, cadastrar, atualizar, deletar };
