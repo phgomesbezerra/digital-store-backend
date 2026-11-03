@@ -1,0 +1,165 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Digital Store - API Backend",
+    "version": "1.0.0",
+    "description": "API da loja Digital Store. Projeto backend do curso Full Stack (Digital College)."
+  },
+  "servers": [{ "url": "http://localhost:3000" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    }
+  },
+  "paths": {
+    "/v1/user/token": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Gera o token de acesso (login)",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": {
+            "type": "object",
+            "required": ["email", "password"],
+            "properties": {
+              "email": { "type": "string", "example": "voce@email.com" },
+              "password": { "type": "string", "example": "sua-senha" }
+            }
+          } } }
+        },
+        "responses": {
+          "200": { "description": "Token gerado", "content": { "application/json": { "schema": { "type": "object", "properties": { "token": { "type": "string" } } } } } },
+          "400": { "description": "Dados incorretos" }
+        }
+      }
+    },
+    "/v1/user/{id}": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Busca um usuário pelo ID",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Dados do usuário (sem senha)" }, "404": { "description": "Não encontrado" } }
+      },
+      "put": {
+        "tags": ["Usuários"],
+        "summary": "Atualiza o usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": {
+          "type": "object", "required": ["firstname", "surname", "email"],
+          "properties": {
+            "firstname": { "type": "string" }, "surname": { "type": "string" }, "email": { "type": "string" }
+          }
+        } } } },
+        "responses": { "204": { "description": "Atualizado" }, "400": { "description": "Dados incorretos" }, "404": { "description": "Não encontrado" } }
+      },
+      "delete": {
+        "tags": ["Usuários"],
+        "summary": "Remove o usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "204": { "description": "Removido" }, "404": { "description": "Não encontrado" } }
+      }
+    },
+    "/v1/user": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Cadastra usuário",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": {
+          "type": "object", "required": ["firstname", "surname", "email", "password", "confirmPassword"],
+          "properties": {
+            "firstname": { "type": "string" }, "surname": { "type": "string" },
+            "email": { "type": "string" }, "password": { "type": "string" }, "confirmPassword": { "type": "string" }
+          }
+        } } } },
+        "responses": { "201": { "description": "Cadastrado" }, "400": { "description": "Dados incorretos" } }
+      }
+    },
+    "/v1/category/search": {
+      "get": {
+        "tags": ["Categorias"],
+        "summary": "Lista categorias com paginação e filtros",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12 }, "description": "-1 traz todos" },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" }, "description": "ex.: name,slug" },
+          { "name": "use_in_menu", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": { "200": { "description": "Lista paginada" }, "400": { "description": "Parâmetros inválidos" } }
+      }
+    },
+    "/v1/category/{id}": {
+      "get": {
+        "tags": ["Categorias"], "summary": "Busca categoria pelo ID",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Dados da categoria" }, "404": { "description": "Não encontrada" } }
+      },
+      "put": {
+        "tags": ["Categorias"], "summary": "Atualiza a categoria", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": {
+          "type": "object", "required": ["name", "slug"],
+          "properties": { "name": { "type": "string" }, "slug": { "type": "string" }, "use_in_menu": { "type": "boolean" } }
+        } } } },
+        "responses": { "204": { "description": "Atualizada" }, "400": { "description": "Dados incorretos" }, "404": { "description": "Não encontrada" } }
+      },
+      "delete": {
+        "tags": ["Categorias"], "summary": "Remove a categoria", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "204": { "description": "Removida" }, "404": { "description": "Não encontrada" } }
+      }
+    },
+    "/v1/category": {
+      "post": {
+        "tags": ["Categorias"], "summary": "Cadastra categoria", "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": {
+          "type": "object", "required": ["name", "slug"],
+          "properties": { "name": { "type": "string" }, "slug": { "type": "string" }, "use_in_menu": { "type": "boolean" } }
+        } } } },
+        "responses": { "201": { "description": "Cadastrada" }, "400": { "description": "Dados incorretos" } }
+      }
+    },
+    "/v1/product/search": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Lista produtos com paginação e filtros",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 12 }, "description": "-1 traz todos" },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "fields", "in": "query", "schema": { "type": "string" }, "description": "ex.: name,images,price" },
+          { "name": "match", "in": "query", "schema": { "type": "string" }, "description": "busca no nome e na descrição" },
+          { "name": "category_ids", "in": "query", "schema": { "type": "string" }, "description": "ex.: 15,24" },
+          { "name": "price-range", "in": "query", "schema": { "type": "string" }, "description": "ex.: 100-200" },
+          { "name": "option[ID]", "in": "query", "schema": { "type": "string" }, "description": "ex.: option[45]=GG,PP" }
+        ],
+        "responses": { "200": { "description": "Lista paginada" }, "400": { "description": "Parâmetros inválidos" } }
+      }
+    },
+    "/v1/product/{id}": {
+      "get": {
+        "tags": ["Produtos"], "summary": "Busca produto pelo ID",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "Dados do produto" }, "404": { "description": "Não encontrado" } }
+      },
+      "put": {
+        "tags": ["Produtos"], "summary": "Atualiza o produto", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "204": { "description": "Atualizado" }, "400": { "description": "Dados incorretos" }, "404": { "description": "Não encontrado" } }
+      },
+      "delete": {
+        "tags": ["Produtos"], "summary": "Remove o produto", "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "204": { "description": "Removido" }, "404": { "description": "Não encontrado" } }
+      }
+    },
+    "/v1/product": {
+      "post": {
+        "tags": ["Produtos"], "summary": "Cadastra produto", "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "201": { "description": "Cadastrado" }, "400": { "description": "Dados incorretos" } }
+      }
+    }
+  }
+}

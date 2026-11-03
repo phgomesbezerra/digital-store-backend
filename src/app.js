@@ -4,6 +4,8 @@ const express = require('express');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./docs/swagger.json');
 
 const app = express();
 
@@ -22,6 +24,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use('/v1/user', userRoutes);
 app.use('/v1/category', categoryRoutes);
 app.use('/v1/product', productRoutes);
+
+// Documentacao interativa da API (Swagger): http://localhost:3000/docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // As imagens dos produtos ficam na pasta uploads/ e podem ser
 // acessadas pelo navegador (ex.: /uploads/nome-do-arquivo.png).

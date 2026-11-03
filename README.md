@@ -36,13 +36,15 @@ tests/          testes automatizados (Jest)
 
 ## Etapas do projeto
 
+(checklist de implementação, não de avaliação — os testes automatizados cobrem os fluxos principais, mas não substituem a correção do professor)
+
 - [x] Etapa 1 - Estrutura, Express e configuração inicial
 - [x] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
 - [x] Etapa 3 - CRUD de usuários
 - [x] Etapa 4 - CRUD de categorias
 - [x] Etapa 5 - CRUD de produtos
 - [x] Etapa 6 - Login com JWT
-- [ ] Etapa 7 - Documentação (Swagger) e testes
+- [x] Etapa 7 - Documentação (Swagger) e testes
 
 ## Banco de dados
 
@@ -101,3 +103,14 @@ A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A r
 | POST | `/v1/user/token` | Recebe e-mail e senha, devolve o token | 200, 400 |
 
 Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT e DELETE. O token vale por 1 dia. Observação: o enunciado se contradiz - a Seção 05 pede status 400 para token ausente/inválido, mas as tabelas dos endpoints dizem 401. Por ora o código responde 400 (Seção 05), mas isso está em confirmação com o monitor; trocar é uma linha em `src/middleware/auth.js`.
+
+## Documentação e testes
+
+- Documentação interativa (Swagger): rode a API e abra http://localhost:3000/docs
+- Testes automatizados: `npm test`. Cada rodada cria um banco de teste PRÓPRIO, com nome único, e apaga apenas esse banco no final — os dados de desenvolvimento nunca são tocados. Se o banco configurado não for local, os testes se recusam a rodar.
+
+## Pendências abertas
+
+- **Confirmação com o monitor:** o enunciado se contradiz sobre o status para token ausente/inválido (Seção 05 pede 400; as tabelas dos endpoints dizem 401). O código responde 400 por ora.
+- **Validação em MySQL oficial:** os testes foram feitos com MariaDB (compatível com o conector MySQL). A rodada final no MySQL do curso ainda está pendente.
+- **Equipe e entrega:** nomes dos integrantes e envio do link no ambiente da disciplina.

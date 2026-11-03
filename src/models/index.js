@@ -2,7 +2,10 @@
 // Cria a conexao com o banco, carrega cada model e define
 // como as tabelas se relacionam entre si.
 const { Sequelize, DataTypes } = require('sequelize');
-const config = require('../config/database').development;
+
+// NODE_ENV=test (usado pelo Jest) aponta para o banco de testes.
+const ambiente = process.env.NODE_ENV === 'test' ? 'test' : 'development';
+const config = require('../config/database')[ambiente];
 
 // Cria a conexao (so conecta de verdade quando faz a primeira consulta).
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
