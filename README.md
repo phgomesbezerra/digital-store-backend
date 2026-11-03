@@ -118,5 +118,5 @@ Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT 
 ## Pendências abertas
 
 - **Confirmação com o monitor:** o enunciado se contradiz sobre o status para token ausente/inválido (Seção 05 pede 400; as tabelas dos endpoints dizem 401). O código responde 400 por ora.
-- **Validação em MySQL oficial:** os testes foram feitos com MariaDB (compatível com o conector MySQL). A rodada final no MySQL do curso ainda está pendente.
+- **Validação em MySQL oficial: feita.** As 6 migrations e os 9 testes automatizados passaram tanto no MySQL oficial 8.4.7 quanto no MariaDB 11.4.5. Isso valida os fluxos testados, mas não substitui a avaliação do professor nem garante comportamento em produção.
 - **Entrega:** envio do link do repositório no ambiente da disciplina (os nomes da equipe estão acima).
