@@ -38,7 +38,7 @@ tests/          testes automatizados (Jest)
 
 - [x] Etapa 1 - Estrutura, Express e configuração inicial
 - [x] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
-- [ ] Etapa 3 - CRUD de usuários
+- [x] Etapa 3 - CRUD de usuários
 - [ ] Etapa 4 - CRUD de categorias
 - [ ] Etapa 5 - CRUD de produtos
 - [ ] Etapa 6 - Login com JWT
@@ -56,3 +56,14 @@ O banco se chama `digitalcollegebr` e tem 6 tabelas:
 - `product_categories` - ligação entre produtos e categorias (um produto pode estar em várias categorias)
 
 As tabelas são criadas pelas migrations (`npx sequelize-cli db:migrate`). Para desfazer a última: `npx sequelize-cli db:migrate:undo`.
+
+## Endpoints de usuários
+
+| Método | Endereço | O que faz | Respostas |
+|--------|----------|-----------|-----------|
+| GET | `/v1/user/:id` | Busca um usuário pelo ID | 200, 404 |
+| POST | `/v1/user` | Cadastra usuário (senha vira hash) | 201, 400 |
+| PUT | `/v1/user/:id` | Atualiza nome e e-mail | 204, 400, 404 |
+| DELETE | `/v1/user/:id` | Remove o usuário | 204, 404 |
+
+A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A resposta da API nunca devolve a senha. A proteção por token (JWT) entra na Etapa 6.
