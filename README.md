@@ -2,6 +2,12 @@
 
 API da loja Digital Store, projeto backend do curso Full Stack (Digital College).
 
+## Equipe
+
+- Pedro Henrique
+- Anderson Maia
+- Anderson Oliveira
+
 ## Tecnologias
 
 Node.js, Express, Dotenv, Nodemon, MySQL e Sequelize. Nas próximas etapas entram JWT, bcrypt e Jest.
@@ -113,4 +119,4 @@ Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT 
 
 - **Confirmação com o monitor:** o enunciado se contradiz sobre o status para token ausente/inválido (Seção 05 pede 400; as tabelas dos endpoints dizem 401). O código responde 400 por ora.
 - **Validação em MySQL oficial:** os testes foram feitos com MariaDB (compatível com o conector MySQL). A rodada final no MySQL do curso ainda está pendente.
-- **Equipe e entrega:** nomes dos integrantes e envio do link no ambiente da disciplina.
+- **Entrega:** envio do link do repositório no ambiente da disciplina (os nomes da equipe estão acima).
