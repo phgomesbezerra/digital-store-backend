@@ -39,7 +39,7 @@ tests/          testes automatizados (Jest)
 - [x] Etapa 1 - Estrutura, Express e configuração inicial
 - [x] Etapa 2 - Banco de dados e tabelas (MySQL + Sequelize)
 - [x] Etapa 3 - CRUD de usuários
-- [ ] Etapa 4 - CRUD de categorias
+- [x] Etapa 4 - CRUD de categorias
 - [ ] Etapa 5 - CRUD de produtos
 - [ ] Etapa 6 - Login com JWT
 - [ ] Etapa 7 - Documentação (Swagger) e testes
@@ -56,6 +56,18 @@ O banco se chama `digitalcollegebr` e tem 6 tabelas:
 - `product_categories` - ligação entre produtos e categorias (um produto pode estar em várias categorias)
 
 As tabelas são criadas pelas migrations (`npx sequelize-cli db:migrate`). Para desfazer a última: `npx sequelize-cli db:migrate:undo`.
+
+## Endpoints de categorias
+
+| Método | Endereço | O que faz | Respostas |
+|--------|----------|-----------|-----------|
+| GET | `/v1/category/search` | Lista categorias com paginação e filtros | 200, 400 |
+| GET | `/v1/category/:id` | Busca uma categoria pelo ID | 200, 404 |
+| POST | `/v1/category` | Cadastra categoria | 201, 400 |
+| PUT | `/v1/category/:id` | Atualiza a categoria | 204, 400, 404 |
+| DELETE | `/v1/category/:id` | Remove a categoria | 204, 404 |
+
+A busca aceita parâmetros na URL: `limit` (itens por página, `-1` traz todos, padrão 12), `page` (página, padrão 1), `fields` (limita os campos, ex.: `fields=name,slug`) e `use_in_menu=true` (só categorias do menu).
 
 ## Endpoints de usuários
 
