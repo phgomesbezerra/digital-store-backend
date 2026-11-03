@@ -65,4 +65,17 @@ async function deletar(req, res) {
   }
 }
 
-module.exports = { obterPorId, cadastrar, atualizar, deletar };
+// POST /v1/user/token - gera o token de acesso (login).
+async function token(req, res) {
+  try {
+    const resultado = await userService.gerarToken(req.body);
+    if (resultado.erro) {
+      return res.status(400).json({ message: resultado.erro });
+    }
+    return res.status(200).json({ token: resultado.token });
+  } catch (erro) {
+    return res.status(500).json({ message: 'Erro interno no servidor.' });
+  }
+}
+
+module.exports = { obterPorId, cadastrar, atualizar, deletar, token };

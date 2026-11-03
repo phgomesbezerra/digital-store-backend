@@ -41,7 +41,7 @@ tests/          testes automatizados (Jest)
 - [x] Etapa 3 - CRUD de usuários
 - [x] Etapa 4 - CRUD de categorias
 - [x] Etapa 5 - CRUD de produtos
-- [ ] Etapa 6 - Login com JWT
+- [x] Etapa 6 - Login com JWT
 - [ ] Etapa 7 - Documentação (Swagger) e testes
 
 ## Banco de dados
@@ -92,4 +92,12 @@ A busca aceita parâmetros na URL: `limit` (itens por página, `-1` traz todos, 
 
 A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A resposta da API nunca devolve a senha.
 
-**Atenção:** os endpoints de escrita (POST, PUT, DELETE) ainda **não** estão protegidos por token. A proteção com JWT entra na Etapa 6. Até lá, esta versão é só para desenvolvimento local, não para uso público com dados reais.
+**Atenção:** todos os endpoints de escrita (POST, PUT, DELETE) exigem o cabeçalho `Authorization: Bearer <token>`. Para conseguir um token, use o login abaixo. Os endpoints de leitura (GET) são públicos. Observação: este projeto só tem "usuário logado" ou "não logado" - não há papéis (admin, cliente etc.), então qualquer usuário com token pode alterar qualquer dado. Isso é o que o enunciado pede.
+
+## Login (token JWT)
+
+| Método | Endereço | O que faz | Respostas |
+|--------|----------|-----------|-----------|
+| POST | `/v1/user/token` | Recebe e-mail e senha, devolve o token | 200, 400 |
+
+Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT e DELETE. O token vale por 1 dia. Observação: o enunciado se contradiz - a Seção 05 pede status 400 para token ausente/inválido, mas as tabelas dos endpoints dizem 401. Por ora o código responde 400 (Seção 05), mas isso está em confirmação com o monitor; trocar é uma linha em `src/middleware/auth.js`.
