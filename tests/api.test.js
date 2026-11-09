@@ -335,3 +335,21 @@ describe('Complemento: atualização, remoção e filtros de produto', () => {
     expect(inexistente.status).toBe(404);
   });
 });
+
+// Validacoes extras: parametros com formato invalido devem dar 400,
+// nunca ser ignorados em silencio.
+describe('Complemento: parâmetros inválidos respondem 400', () => {
+  test('use_in_menu=abc em categorias é recusado com 400', async () => {
+    const invalido = await request(app).get('/v1/category/search?use_in_menu=abc');
+    expect(invalido.status).toBe(400);
+
+    // true e false seguem funcionando normalmente.
+    const valido = await request(app).get('/v1/category/search?use_in_menu=false');
+    expect(valido.status).toBe(200);
+  });
+
+  test('option[ID inválido] em produtos é recusado com 400', async () => {
+    const invalido = await request(app).get('/v1/product/search?option[abc]=39');
+    expect(invalido.status).toBe(400);
+  });
+});

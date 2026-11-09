@@ -107,6 +107,12 @@ function filtrosDeOpcao(query) {
     const m = chave.match(/^option\[(\d+)\]$/);
     if (m) {
       filtros.push({ id: Number(m[1]), valores: String(valor).split(',') });
+      continue;
+    }
+    // option[abc] (ID que nao e numero): nao ignoramos em silencio -
+    // marcamos como invalido para a busca responder 400 (dados incorretos).
+    if (/^option\[.*\]$/.test(chave)) {
+      filtros.push({ id: NaN, valores: [] });
     }
   }
   return filtros;

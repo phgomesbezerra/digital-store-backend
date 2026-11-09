@@ -16,6 +16,11 @@ async function buscar(query) {
   // Monta o filtro (where) e os campos (attributes) a partir da query string.
   const where = {};
   if (query.use_in_menu !== undefined) {
+    // O enunciado so documenta use_in_menu=true. Aceitamos true/false;
+    // qualquer outro valor e dado incorreto (400), nao filtro silencioso.
+    if (query.use_in_menu !== 'true' && query.use_in_menu !== 'false') {
+      return { erro: 'Parâmetro use_in_menu inválido. Use true ou false.' };
+    }
     where.use_in_menu = query.use_in_menu === 'true'; // use_in_menu=true filtra so as do menu
   }
 
