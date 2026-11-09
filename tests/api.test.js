@@ -210,3 +210,128 @@ describe('CRUD de produtos (Seção 04)', () => {
     expect(res.status).toBe(400);
   });
 });
+
+// Complemento de cobertura: os fluxos abaixo ja eram conferidos na mao;
+// agora ficam registrados como testes para repetir a verificacao sozinhos.
+describe('Complemento: atualização, remoção e filtros de produto', () => {
+  let token;
+  let categoriaId;
+  let produtoId;
+  let opcaoId;
+
+  beforeAll(async () => {
+    token = await obterToken();
+    const auth = { Authorization: 'Bearer ' + token };
+    const cat = await request(app).post('/v1/category').set(auth).send({ name: 'Casual', slug: 'casual' });
+    categoriaId = cat.body.id;
+    const prod = await request(app)
+      .post('/v1/product')
+      .set(auth)
+      .send({
+        name: 'Tênis Casual', slug: 'tenis-casual', price: 299.9, price_with_discount: 249.9,
+        category_ids: [categoriaId],
+        images: [{ type: 'image/png', content: PNG }],
+        options: [{ title: 'Tamanho', values: ['39', '40'] }],
+      });
+    produtoId = prod.body.id;
+    opcaoId = prod.body.options[0].id;
+  });
+
+  test('atualiza categoria (PUT) e confere a mudança', async () => {
+    const auth = { Authorization: 'Bearer ' + token };
+    const atualiza = await request(app)
+      .put('/v1/category/' + categoriaId)
+      .set(auth)
+      .send({ name: 'Casual Premium', slug: 'casual-premium', use_in_menu: true });
+    expect(atualiza.status).toBe(204);
+
+    const confere = await request(app).get('/v1/category/' + categoriaId);
+    expect(confere.body.name).toBe('Casual Premium');
+    expect(confere.body.use_in_menu).toBe(true);
+
+    const inexistente = await request(app)
+      .put('/v1/category/999999')
+      .set(auth)
+      .send({ name: 'X', slug: 'x' });
+    expect(inexistente.status).toBe(404);
+  });
+
+  test('atualiza produto (PUT): dados, opção e imagem', async () => {
+    const auth = { Authorization: 'Bearer ' + token };
+    const atualiza = await request(app)
+      .put('/v1/product/' + produtoId)
+      .set(auth)
+      .send({
+        name: 'Tênis Casual Pro', slug: 'tenis-casual-pro', price: 349.9, price_with_discount: 299.9,
+        stock: 7,
+        options: [{ id: opcaoId, values: ['40', '41'], radius: '8px' }],
+      });
+    expect(atualiza.status).toBe(204);
+
+    const confere = await request(app).get('/v1/product/' + produtoId);
+    expect(confere.body.name).toBe('Tênis Casual Pro');
+    expect(confere.body.stock).toBe(7);
+    expect(confere.body.options[0].values).toEqual(['40', '41']);
+    expect(confere.body.options[0].radius).toBe(8);
+    expect(confere.body.images.length).toBe(1);
+
+    const inexistente = await request(app)
+      .put('/v1/product/999999')
+      .set(auth)
+      .send({ name: 'X', slug: 'x', price: 1, price_with_discount: 1 });
+    expect(inexistente.status).toBe(404);
+  });
+
+  test('PUT com deleted:true apaga a imagem do produto', async () => {
+    const auth = { Authorization: 'Bearer ' + token };
+    const antes = await request(app).get('/v1/product/' + produtoId);
+    const imagemId = antes.body.images[0].id;
+
+    const atualiza = await request(app)
+      .put('/v1/product/' + produtoId)
+      .set(auth)
+      .send({
+        name: 'Tênis Casual Pro', slug: 'tenis-casual-pro', price: 349.9, price_with_discount: 299.9,
+        images: [{ id: imagemId, deleted: true }],
+      });
+    expect(atualiza.status).toBe(204);
+
+    const depois = await request(app).get('/v1/product/' + produtoId);
+    expect(depois.body.images.length).toBe(0);
+  });
+
+  test('filtro option[ID]=valor encontra o produto', async () => {
+    const achou = await request(app).get('/v1/product/search?limit=-1&option[' + opcaoId + ']=41');
+    expect(achou.status).toBe(200);
+    expect(achou.body.data.some((p) => p.id === produtoId)).toBe(true);
+
+    const naoAchou = await request(app).get('/v1/product/search?limit=-1&option[' + opcaoId + ']=99');
+    expect(naoAchou.body.data.some((p) => p.id === produtoId)).toBe(false);
+  });
+
+  test('paginação: limit=1 e page=2 traz o segundo item', async () => {
+    const pagina2 = await request(app).get('/v1/product/search?limit=1&page=2');
+    expect(pagina2.status).toBe(200);
+    expect(pagina2.body.data.length).toBe(1);
+    expect(pagina2.body.limit).toBe(1);
+    expect(pagina2.body.page).toBe(2);
+    expect(pagina2.body.total).toBeGreaterThanOrEqual(2);
+  });
+
+  test('remove produto e categoria (DELETE)', async () => {
+    const auth = { Authorization: 'Bearer ' + token };
+
+    const removeProduto = await request(app).delete('/v1/product/' + produtoId).set(auth);
+    expect(removeProduto.status).toBe(204);
+    const produtoSumiu = await request(app).get('/v1/product/' + produtoId);
+    expect(produtoSumiu.status).toBe(404);
+
+    const removeCategoria = await request(app).delete('/v1/category/' + categoriaId).set(auth);
+    expect(removeCategoria.status).toBe(204);
+    const categoriaSumiu = await request(app).get('/v1/category/' + categoriaId);
+    expect(categoriaSumiu.status).toBe(404);
+
+    const inexistente = await request(app).delete('/v1/product/999999').set(auth);
+    expect(inexistente.status).toBe(404);
+  });
+});

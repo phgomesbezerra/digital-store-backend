@@ -20,7 +20,7 @@ Node.js, Express, Dotenv, Nodemon, MySQL e Sequelize. Nas próximas etapas entra
 4. Copie o arquivo `.env.example` para `.env` e preencha com os dados do seu MySQL local.
 5. Crie o banco de dados no MySQL: `CREATE DATABASE digitalcollegebr;`
 6. Rode `npx sequelize-cli db:migrate` para criar as tabelas.
-8. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
+7. Rode `npm run dev` para desenvolvimento (reinicia sozinho a cada mudança).
 
 A API sobe em http://localhost:3000.
 
@@ -108,7 +108,32 @@ A senha nunca é salva em texto puro: usamos bcrypt para guardar só o hash. A r
 |--------|----------|-----------|-----------|
 | POST | `/v1/user/token` | Recebe e-mail e senha, devolve o token | 200, 400 |
 
-Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT e DELETE. O token vale por 1 dia. Observação: o enunciado se contradiz - a Seção 05 pede status 400 para token ausente/inválido, mas as tabelas dos endpoints dizem 401. Por ora o código responde 400 (Seção 05), mas isso está em confirmação com o monitor; trocar é uma linha em `src/middleware/auth.js`.
+Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT e DELETE. O token vale por 1 dia.
+
+## Exemplo rápido: do primeiro usuário ao primeiro produto
+
+Como toda escrita (POST, PUT, DELETE) exige token, o primeiro usuário nasce pelo seed - senão ficaria impossível começar (para ter token precisa de usuário, e o cadastro de usuário também pede token).
+
+1. No seu `.env`, preencha `SEED_USER_EMAIL` e `SEED_USER_PASSWORD` com dados seus.
+2. Rode `npx sequelize-cli db:seed:all` para criar o primeiro usuário.
+3. Faça o login para pegar o token:
+
+```bash
+curl -X POST http://localhost:3000/v1/user/token \
+  -H "Content-Type: application/json" \
+  -d '{"email": "seu-email", "password": "sua-senha"}'
+```
+
+4. Com o token em mãos, cadastre uma categoria (o mesmo vale para produtos):
+
+```bash
+curl -X POST http://localhost:3000/v1/category \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -d '{"name": "Tênis", "slug": "tenis", "use_in_menu": true}'
+```
+
+5. Para ver o resultado, abra no navegador: http://localhost:3000/v1/category/search (as leituras GET são públicas). Observação: o enunciado se contradiz - a Seção 05 pede status 400 para token ausente/inválido, mas as tabelas dos endpoints dizem 401. Por ora o código responde 400 (Seção 05), mas isso está em confirmação com o monitor; trocar é uma linha em `src/middleware/auth.js`.
 
 ## Documentação e testes
 
@@ -118,5 +143,5 @@ Use o token no cabeçalho `Authorization: Bearer <token>` em todos os POST, PUT 
 ## Pendências abertas
 
 - **Confirmação com o monitor:** o enunciado se contradiz sobre o status para token ausente/inválido (Seção 05 pede 400; as tabelas dos endpoints dizem 401). O código responde 400 por ora.
-- **Validação em MySQL oficial: feita.** As 6 migrations e os 9 testes automatizados passaram tanto no MySQL oficial 8.4.7 quanto no MariaDB 11.4.5. Isso valida os fluxos testados, mas não substitui a avaliação do professor nem garante comportamento em produção.
+- **Validação em MySQL oficial: feita.** As 6 migrations e os 15 testes automatizados passaram tanto no MySQL oficial 8.4.7 quanto no MariaDB 11.4.5. Isso valida os fluxos testados, mas não substitui a avaliação do professor nem garante comportamento em produção.
 - **Entrega:** envio do link do repositório no ambiente da disciplina (os nomes da equipe estão acima).
