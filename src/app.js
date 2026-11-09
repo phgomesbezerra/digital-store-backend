@@ -1,6 +1,7 @@
 // app.js - configura o Express: os "middlewares" (funções que preparam cada requisição)
 // e as rotas da API. Separar o app do server facilita os testes com Jest depois.
 const express = require('express');
+const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
@@ -18,6 +19,16 @@ app.set('query parser', 'simple');
 // Permite que a API entenda requisições com corpo em JSON (cadastros, logins etc.).
 // O limite de 10mb existe porque as imagens dos produtos chegam em base64
 // dentro do JSON - mas sem deixar corpos gigantes derrubarem o servidor.
+// CORS: permite que o site da loja (React, em outro endereco/porta) chame a API
+// direto pelo navegador. Sem isso, o navegador bloqueia a chamada antes de chegar
+// aqui. (Alternativa em desenvolvimento: proxy do Vite, que nem precisa de CORS -
+// mas o site hospedado chamando a API hospedada sempre precisa.)
+// Desenvolvimento: sem CORS_ORIGIN no .env, qualquer origem vale.
+// Producao: defina CORS_ORIGIN com o endereco do site (ex.: https://minha-loja.vercel.app)
+// e so ele conseguira chamar a API pelo navegador.
+const origensPermitidas = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : '*';
+app.use(cors({ origin: origensPermitidas }));
+
 app.use(express.json({ limit: '10mb' }));
 
 // Rotas da API (versão 1): usuários, categorias e produtos.
